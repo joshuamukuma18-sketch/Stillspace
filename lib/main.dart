@@ -56,7 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   (item) => ChoiceChip(
                     label: Text(item),
                     selected: mood == item,
-                    onSelected: (_) => setState(() => mood = item),
+                    onSelected: (selected) {
+  if (selected) {
+    setState(() {
+      mood = item;
+    });
+  }
+},
                   ),
                 )
                 .toList(),
