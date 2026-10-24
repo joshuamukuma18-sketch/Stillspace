@@ -68,9 +68,47 @@ class _HomeScreenState extends State<HomeScreen> {
                 .toList(),
           ),
           if (mood != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text('Thank you for checking in.'),
+  Padding(
+    padding: const EdgeInsets.only(top: 16),
+    child: Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              mood == 'Calm'
+                  ? 'Your calming moment'
+                  : mood == 'Happy'
+                      ? 'Keep your happiness growing'
+                      : mood == 'Okay'
+                          ? 'Take a mindful pause'
+                          : mood == 'Anxious'
+                              ? 'Let’s ease your worries'
+                              : 'Be gentle with yourself',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              mood == 'Calm'
+                  ? 'Breathe in gently for 4 seconds, then breathe out for 6 seconds. Repeat 5 times.'
+                  : mood == 'Happy'
+                      ? 'Take a moment to notice three good things about today.'
+                      : mood == 'Okay'
+                          ? 'Relax your shoulders and take three slow, comfortable breaths.'
+                          : mood == 'Anxious'
+                              ? 'Name 5 things you see, 4 things you feel, and 3 things you hear.'
+                              : 'Take a small break, drink some water, and choose one kind thing to do for yourself.',
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+        
             ),
           const SizedBox(height: 24),
           const Card(
