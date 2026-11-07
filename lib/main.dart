@@ -61,6 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       mood = item;
     });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ActivitiesScreen(mood: item),
+      ),
+    );
   }
 },
                   ),
@@ -122,6 +129,146 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ActivitiesScreen extends StatelessWidget {
+  final String mood;
+
+  const ActivitiesScreen({super.key, required this.mood});
+
+  @override
+  Widget build(BuildContext context) {
+    final activities = [
+      {
+        'title': 'Breathing Exercise',
+        'description': 'Follow a gentle breathing exercise to relax.',
+        'icon': Icons.air,
+        'details':
+            'Breathe in gently for 4 seconds. Breathe out slowly for 6 seconds. Repeat five times.'
+      },
+      {
+        'title': 'Meditation',
+        'description': 'Take a moment to relax your mind.',
+        'icon': Icons.self_improvement,
+        'details':
+            'Sit comfortably, close your eyes if you wish, and focus on your breathing for two minutes.'
+      },
+      {
+        'title': 'Positive Thoughts',
+        'description': 'Read encouraging words.',
+        'icon': Icons.favorite,
+        'details':
+            'You are doing your best. Every small step matters. Be patient and gentle with yourself.'
+      },
+      {
+        'title': 'Mood Journal',
+        'description': 'Write down how you feel.',
+        'icon': Icons.book,
+        'details':
+            'Write freely about your feelings, thoughts and what might help you today.'
+      },
+      {
+        'title': 'Relaxation',
+        'description': 'Discover simple ways to unwind.',
+        'icon': Icons.spa,
+        'details':
+            'Find a comfortable place, stretch gently, listen to calming sounds or enjoy a quiet moment.'
+      },
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Choose an Activity'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            'You selected: $mood',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text('What would you like to do today?'),
+          const SizedBox(height: 20),
+          ...activities.map((activity) {
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: Icon(
+                  activity['icon'] as IconData,
+                  size: 32,
+                ),
+                title: Text(activity['title'] as String),
+                subtitle: Text(activity['description'] as String),
+                trailing: const Icon(Icons.arrow_forward_ios),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ActivityDetailScreen(
+                        title: activity['title'] as String,
+                        details: activity['details'] as String,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+class ActivityDetailScreen extends StatelessWidget {
+  final String title;
+  final String details;
+
+  const ActivityDetailScreen({
+    super.key,
+    required this.title,
+    required this.details,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              details,
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 24),
+            if (title == 'Mood Journal')
+              const TextField(
+                maxLines: 5,
+                decoration: InputDecoration(
+                  hintText: 'Write your feelings here...',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
