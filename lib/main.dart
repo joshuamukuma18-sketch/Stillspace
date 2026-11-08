@@ -141,43 +141,112 @@ class ActivitiesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activities = [
-      {
-        'title': 'Breathing Exercise',
-        'description': 'Follow a gentle breathing exercise to relax.',
-        'icon': Icons.air,
-        'details':
-            'Breathe in gently for 4 seconds. Breathe out slowly for 6 seconds. Repeat five times.'
-      },
-      {
-        'title': 'Meditation',
-        'description': 'Take a moment to relax your mind.',
-        'icon': Icons.self_improvement,
-        'details':
-            'Sit comfortably, close your eyes if you wish, and focus on your breathing for two minutes.'
-      },
-      {
-        'title': 'Positive Thoughts',
-        'description': 'Read encouraging words.',
-        'icon': Icons.favorite,
-        'details':
-            'You are doing your best. Every small step matters. Be patient and gentle with yourself.'
-      },
-      {
-        'title': 'Mood Journal',
-        'description': 'Write down how you feel.',
-        'icon': Icons.book,
-        'details':
-            'Write freely about your feelings, thoughts and what might help you today.'
-      },
-      {
-        'title': 'Relaxation',
-        'description': 'Discover simple ways to unwind.',
-        'icon': Icons.spa,
-        'details':
-            'Find a comfortable place, stretch gently, listen to calming sounds or enjoy a quiet moment.'
-      },
-    ];
+    
+final List<Map<String, dynamic>> activities = mood == 'Calm'
+    ? [
+        {
+          'title': 'Nature Breathing',
+          'description': 'Relax with a gentle breathing exercise.',
+          'icon': Icons.air,
+          'details': 'Breathe in for 4 seconds. Hold for 2 seconds. Breathe out slowly for 6 seconds. Repeat gently.'
+        },
+        {
+          'title': 'Nature Meditation',
+          'description': 'Enjoy a peaceful moment.',
+          'icon': Icons.spa,
+          'details': 'Find a comfortable position. Close your eyes if you wish. Imagine yourself somewhere peaceful.'
+        },
+        {
+          'title': 'Gratitude Journal',
+          'description': 'Remember the good things in life.',
+          'icon': Icons.book,
+          'details': 'Write down three things you are grateful for today.'
+        },
+      ]
+    : mood == 'Happy'
+        ? [
+            {
+              'title': 'Happy Moments',
+              'description': 'Celebrate what makes you smile.',
+              'icon': Icons.celebration,
+              'details': 'Think of three things that made you smile today.'
+            },
+            {
+              'title': 'Positive Affirmations',
+              'description': 'Enjoy some encouraging words.',
+              'icon': Icons.favorite,
+              'details': 'I deserve happiness. I am growing. Good things can happen to me.'
+            },
+            {
+              'title': 'Joyful Movement',
+              'description': 'Enjoy a little movement.',
+              'icon': Icons.directions_walk,
+              'details': 'Put on your favourite music and enjoy a gentle dance or walk.'
+            },
+          ]
+        : mood == 'Okay'
+            ? [
+                {
+                  'title': 'Mindful Moment',
+                  'description': 'Take a break and reconnect.',
+                  'icon': Icons.self_improvement,
+                  'details': 'Notice five things you can see, four things you can feel, and three things you can hear.'
+                },
+                {
+                  'title': 'Mood Journal',
+                  'description': 'Reflect on your feelings.',
+                  'icon': Icons.book,
+                  'details': 'Write about how your day is going and what you need right now.'
+                },
+                {
+                  'title': 'Gentle Stretching',
+                  'description': 'Give your body a little care.',
+                  'icon': Icons.accessibility_new,
+                  'details': 'Gently stretch your shoulders, arms and neck without forcing any movement.'
+                },
+              ]
+            : mood == 'Anxious'
+                ? [
+                    {
+                      'title': 'Guided Breathing',
+                      'description': 'Slow down and breathe gently.',
+                      'icon': Icons.air,
+                      'details': 'Breathe in gently for 4 seconds and breathe out for 6 seconds. Repeat for one minute.'
+                    },
+                    {
+                      'title': '5-4-3-2-1 Grounding',
+                      'description': 'Reconnect with your surroundings.',
+                      'icon': Icons.landscape,
+                      'details': 'Notice 5 things you see, 4 things you feel, 3 things you hear, 2 things you smell and 1 thing you taste.'
+                    },
+                    {
+                      'title': 'Calming Thoughts',
+                      'description': 'Read reassuring reminders.',
+                      'icon': Icons.favorite,
+                      'details': 'I can take things one step at a time. I do not have to solve everything right now.'
+                    },
+                  ]
+                : [
+                    {
+                      'title': 'Gentle Encouragement',
+                      'description': 'Read a kind message.',
+                      'icon': Icons.favorite,
+                      'details': 'You matter. Your feelings matter. You do not have to be perfect. Take today one small step at a time.'
+                    },
+                    {
+                      'title': 'Small Wins',
+                      'description': 'Celebrate little achievements.',
+                      'icon': Icons.star,
+                      'details': 'Think of one small thing you managed to do today. Even getting through a difficult moment counts.'
+                    },
+                    {
+                      'title': 'Self-Care Break',
+                      'description': 'Give yourself a moment of kindness.',
+                      'icon': Icons.spa,
+                      'details': 'Drink some water, find a comfortable place and give yourself permission to rest.'
+                    },
+                  ];
+
 
     return Scaffold(
       appBar: AppBar(
