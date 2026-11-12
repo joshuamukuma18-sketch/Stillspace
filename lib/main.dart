@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 void main() {
   runApp(const StillSpaceApp());
 }
@@ -367,6 +368,34 @@ final List<Map<String, dynamic>> activities = mood == 'Calm'
               ),
             );
           }),
+          const SizedBox(height: 16),
+
+Card(
+  child: ListTile(
+    leading: const Icon(
+      Icons.air,
+      size: 32,
+      color: Colors.deepPurple,
+    ),
+    title: const Text(
+      'Interactive Breathing Coach',
+      style: TextStyle(fontWeight: FontWeight.bold),
+    ),
+    subtitle: const Text(
+      'Relax with a guided breathing exercise.',
+    ),
+    trailing: const Icon(Icons.arrow_forward_ios),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const BreathingCoachScreen(),
+        ),
+      );
+    },
+  ),
+),
         ],
       ),
     );
@@ -414,6 +443,202 @@ class ActivityDetailScreen extends StatelessWidget {
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+class BreathingCoachScreen extends StatefulWidget {
+  const BreathingCoachScreen({super.key});
+
+  @override
+  State<BreathingCoachScreen> createState() =>
+      _BreathingCoachScreenState();
+}
+
+class _BreathingCoachScreenState
+    extends State<BreathingCoachScreen> {
+  Timer? _timer;
+
+  bool _isRunning = false;
+  bool _isInhaling = true;
+  bool _isFinished = false;
+
+  int _secondsLeft = 4;
+  int _cyclesCompleted = 0;
+
+  final int _targetCycles = 5;
+
+  void _startBreathing() {
+    if (_isFinished) {
+      _resetBreathing();
+    }
+
+    if (_isRunning) return;
+
+    setState(() {
+      _isRunning = true;
+    });
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        if (!mounted) return;
+
+        setState(() {
+          if (_secondsLeft > 1) {
+            _secondsLeft--;
+          } else {
+            if (_isInhaling) {
+              _isInhaling = false;
+              _secondsLeft = 6;
+            } else {
+              _cyclesCompleted++;
+
+              if (_cyclesCompleted >= _targetCycles) {
+                _timer?.cancel();
+                _isRunning = false;
+                _isFinished = true;
+              } else {
+                _isInhaling = true;
+                _secondsLeft = 4;
+              }
+            }
+          }
+        });
+      },
+    );
+  }
+
+  void _stopBreathing() {
+    _timer?.cancel();
+
+    setState(() {
+      _isRunning = false;
+    });
+  }
+
+  void _resetBreathing() {
+    _timer?.cancel();
+
+    setState(() {
+      _isRunning = false;
+      _isInhaling = true;
+      _isFinished = false;
+      _secondsLeft = 4;
+      _cyclesCompleted = 0;
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Breathing Coach'),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Find Your Calm',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Text(
+                _isFinished
+                    ? 'Wonderful! You completed your exercise.'
+                    : 'Follow the circle and breathe gently.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+
+              const SizedBox(height: 40),
+
+              AnimatedContainer(
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeInOut,
+                width: _isInhaling ? 230 : 165,
+                height: _isInhaling ? 230 : 165,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF8F9FE8),
+                      Color(0xFFB9A5E8),
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    _isFinished
+                        ? 'Well done!'
+                        : _isRunning
+                            ? '${_isInhaling ? 'Breathe In' : 'Breathe Out'}\n$_secondsLeft'
+                            : 'Ready?',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 23,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 35),
+
+              Text(
+                'Cycles completed: $_cyclesCompleted / $_targetCycles',
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              if (!_isRunning && !_isFinished)
+                ElevatedButton(
+                  onPressed: _startBreathing,
+                  child: const Text('Start Breathing'),
+                ),
+
+              if (_isRunning)
+                ElevatedButton(
+                  onPressed: _stopBreathing,
+                  child: const Text('Pause Exercise'),
+                ),
+
+              if (_isFinished || !_isRunning)
+                OutlinedButton(
+                  onPressed: _resetBreathing,
+                  child: const Text('Reset Exercise'),
+                ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                'Breathe comfortably. Never force your breathing. '
+                'You can stop whenever you wish.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );
