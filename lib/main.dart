@@ -402,11 +402,205 @@ Card(
       ),
     );
   }
-}
 
-class ActivityDetailScreen extends StatelessWidget {
+
+  
+class ActivityDetailScreen extends StatefulWidget {
   final String title;
   final String details;
+
+  const ActivityDetailScreen({
+    super.key,
+    required this.title,
+    required this.details,
+  });
+
+  @override
+  State<ActivityDetailScreen> createState() =>
+      _ActivityDetailScreenState();
+}
+
+class _ActivityDetailScreenState
+    extends State<ActivityDetailScreen> {
+  final TextEditingController _controller =
+      TextEditingController();
+
+  List<String> _entries = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEntries();
+  }
+
+  Future<void> _loadEntries() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList('mood_journal_entries') ?? [];
+
+    if (!mounted) return;
+
+    setState(() {
+      _entries = saved;
+    });
+  }
+
+  Future<void> _saveEntry() async {
+    final note = _controller.text.trim();
+
+    if (note.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please write something first.'),
+        ),
+      );
+      return;
+    }
+
+    final now = DateTime.now().toString().substring(0, 16);
+    final entry = '$now|$note';
+
+    final updatedEntries = [entry, ..._entries];
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'mood_journal_entries',
+      updatedEntries,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _entries = updatedEntries;
+      _controller.clear();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Your journal entry has been saved!'),
+      ),
+    );
+  }
+
+  Future<void> _deleteEntry(int index) async {
+    final updatedEntries = List<String>.from(_entries);
+    updatedEntries.removeAt(index);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'mood_journal_entries',
+      updatedEntries,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _entries = updatedEntries;
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isJournal = widget.title == 'Mood Journal';
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Text(
+            widget.title,
+            style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            widget.details,
+            style: const TextStyle(fontSize: 18),
+          ),
+
+          if (isJournal) ...[
+            const SizedBox(height: 24),
+            const Text(
+              'How are you feeling today?',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _controller,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: 'Write your thoughts here...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                filled: true,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _saveEntry,
+              icon: const Icon(Icons.save),
+              label: const Text('Save Journal Entry'),
+            ),
+            const SizedBox(height: 28),
+            const Text(
+              'Previous Journal Entries',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            if (_entries.isEmpty)
+              const Text(
+                'Your saved entries will appear here.',
+              ),
+
+            ..._entries.asMap().entries.map((item) {
+              final index = item.key;
+              final entry = item.value;
+              final separator = entry.indexOf('|');
+
+              final date = separator >= 0
+                  ? entry.substring(0, separator)
+                  : '';
+              final note = separator >= 0
+                  ? entry.substring(separator + 1)
+                  : entry;
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  title: Text(note),
+                  subtitle: Text(date),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    onPressed: () => _deleteEntry(index),
+                  ),
+                ),
+              );
+            }),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 
   const ActivityDetailScreen({
     super.key,
