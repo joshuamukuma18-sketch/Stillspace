@@ -6,7 +6,7 @@ void main() {
   runApp(const StillSpaceApp());
 }
 
-class StillSpaceApp extends StatelessWidget { 
+class StillSpaceApp extends StatelessWidget {  
   const StillSpaceApp({super.key});
 
   @override
