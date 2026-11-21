@@ -4,25 +4,62 @@ void main() {
   runApp(const StillSpaceApp());
 }
 
-class StillSpaceApp extends StatelessWidget {
+
+class StillSpaceApp extends StatefulWidget {
   const StillSpaceApp({super.key});
+
+  @override
+  State<StillSpaceApp> createState() => _StillSpaceAppState();
+}
+
+class _StillSpaceAppState extends State<StillSpaceApp> {
+  ThemeMode _themeMode = ThemeMode.system;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'StillSpace',
       debugShowCheckedModeBanner: false,
+
+      themeMode: _themeMode,
+
+      // LIGHT MODE
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF789681),
+          seedColor: const Color(0xFF91A995),
+          brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF5F7F3),
+        scaffoldBackgroundColor: const Color(0xFFF2EDE2),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF2EDE2),
+          foregroundColor: Color(0xFF30363D),
+          elevation: 0,
+        ),
       ),
+
+      // DARK MODE
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF91A995),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF30363D),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF30363D),
+          foregroundColor: Color(0xFFF2EDE2),
+          elevation: 0,
+        ),
+      ),
+
       home: const HomeScreen(),
     );
   }
 }
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
