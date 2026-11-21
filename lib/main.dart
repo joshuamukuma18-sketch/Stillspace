@@ -114,7 +114,7 @@ class HomeScreen extends StatelessWidget {
             )),
             const SizedBox(height: 12),
             Card(
-              child: ListTile(
+              child: ListTile( 
                 leading: const Icon(Icons.air, size: 32),
                 title: const Text('Breathing Coach'),
                 subtitle: const Text('Take a peaceful moment.'),
