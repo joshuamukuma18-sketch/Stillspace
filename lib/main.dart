@@ -173,41 +173,72 @@ class BreathingScreen extends StatefulWidget {
   const BreathingScreen({super.key});
 
   @override
-  State<BreathingScreen> createState() => _BreathingScreenState();
+  State<BreathingScreen> createState() =>
+      _BreathingScreenState();
 }
 
 class _BreathingScreenState extends State<BreathingScreen> {
   int step = 0;
-  final steps = [
+
+  final List<String> instructions = const [
     'Breathe in gently.',
+    'Pause for a moment.',
     'Breathe out slowly.',
-    'Relax your shoulders.',
-    'Continue at your own pace.',
+    'Relax and begin again.',
   ];
+
+  void nextStep() {
+    setState(() {
+      if (step == instructions.length - 1) {
+        step = 0;
+      } else {
+        step++;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Breathing Coach')),
+      appBar: AppBar(
+        title: const Text('Breathing Coach'),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.air, size: 75, color: Color(0xFF789681)),
+              const Icon(
+                Icons.air,
+                size: 80,
+                color: Colors.teal,
+              ),
               const SizedBox(height: 25),
-              const Text('Take a peaceful moment',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const Text(
+                'Take a moment for yourself',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22),
+              ),
               const SizedBox(height: 20),
-              Text(steps[step], style: const TextStyle(fontSize: 20)),
+              Text(
+                instructions[step],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 30),
               FilledButton(
-  onPressed: () {
-    setState(() {
-      step = (step + 1) % instructions.length;
-    });
-  },
-  child: const Text('Next Step'),
-),
+                onPressed: nextStep,
+                child: const Text('Next Step'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
