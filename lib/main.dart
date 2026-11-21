@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 void main() {
   runApp(const StillSpaceApp());
@@ -205,6 +206,13 @@ class ActivityDetailScreen extends StatelessWidget {
     );
   }
 }
+class BreathingScreen extends StatefulWidget {
+  const BreathingScreen({super.key});
+
+  @override
+  State<BreathingScreen> createState() =>
+      _BreathingScreenState();
+}
 
 class BreathingScreen extends StatefulWidget {
   const BreathingScreen({super.key});
@@ -216,6 +224,9 @@ class BreathingScreen extends StatefulWidget {
 
 class _BreathingScreenState extends State<BreathingScreen> {
   int step = 0;
+  bool voiceEnabled = true;
+
+  final FlutterTts flutterTts = FlutterTts();
 
   final List<String> instructions = const [
     'Breathe in gently.',
@@ -224,14 +235,58 @@ class _BreathingScreenState extends State<BreathingScreen> {
     'Relax and begin again.',
   ];
 
-  void nextStep() {
+  @override
+  void initState() {
+    super.initState();
+    setupVoice();
+  }
+
+  Future<void> setupVoice() async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.4);
+    await flutterTts.setVolume(1.0);
+    await flutterTts.setPitch(1.0);
+
+    if (mounted && voiceEnabled) {
+      await speakInstruction();
+    }
+  }
+
+  Future<void> speakInstruction() async {
+    if (!voiceEnabled) return;
+
+    await flutterTts.stop();
+    await flutterTts.speak(instructions[step]);
+  }
+
+  Future<void> nextStep() async {
     setState(() {
-      if (step == instructions.length - 1) {
-        step = 0;
-      } else {
-        step++;
-      }
+      step = (step + 1) % instructions.length;
     });
+
+    await speakInstruction();
+  }
+
+  Future<void> toggleVoice() async {
+    setState(() {
+      voiceEnabled = !voiceEnabled;
+    });
+
+    if (voiceEnabled) {
+      await speakInstruction();
+    } else {
+      await flutterTts.stop();
+    }
+  }
+
+  Future<void> replayVoice() async {
+    await speakInstruction();
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
   }
 
   @override
@@ -271,6 +326,22 @@ class _BreathingScreenState extends State<BreathingScreen> {
                 onPressed: nextStep,
                 child: const Text('Next Step'),
               ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: toggleVoice,
+                icon: Icon(
+                  voiceEnabled ? Icons.volume_up : Icons.volume_off,
+                ),
+                label: Text(
+                  voiceEnabled ? 'Voice ON' : 'Voice OFF',
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: voiceEnabled ? replayVoice : null,
+                icon: const Icon(Icons.replay),
+                label: const Text('Replay Instruction'),
+              ),
             ],
           ),
         ),
@@ -278,4 +349,3 @@ class _BreathingScreenState extends State<BreathingScreen> {
     );
   }
 }
-
