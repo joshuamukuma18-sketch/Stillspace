@@ -206,13 +206,7 @@ class ActivityDetailScreen extends StatelessWidget {
     );
   }
 }
-class BreathingScreen extends StatefulWidget {
-  const BreathingScreen({super.key});
 
-  @override
-  State<BreathingScreen> createState() =>
-      _BreathingScreenState();
-}
 
 class BreathingScreen extends StatefulWidget {
   const BreathingScreen({super.key});
