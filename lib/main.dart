@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -204,13 +203,5 @@ class _BreathingScreenState extends State<BreathingScreen> {
               Text(steps[step], style: const TextStyle(fontSize: 20)),
               const SizedBox(height: 30),
               FilledButton(
-                onPressed: () => setState(() => step = (step + 1) % steps.length),
-                child: const Text('Next Step'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+                onPressed: () => setState(() => step = (
+
