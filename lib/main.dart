@@ -122,7 +122,6 @@ onTap: () async {
   await prefs.setStringList('mood_history', history);
 
   if (!context.mounted) return;
-
   Navigator.push(
     context,
     MaterialPageRoute(
@@ -133,7 +132,14 @@ onTap: () async {
     ),
   );
 },
-
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+}
 class ActivitiesScreen extends StatelessWidget {
   final String mood;
   final List<String> activities;
