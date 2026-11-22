@@ -835,6 +835,28 @@ Card(
     },
   ),
 ),
+      
+const SizedBox(height: 10),
+
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.health_and_safety_outlined),
+    title: const Text('Mental Wellness & Safety'),
+    subtitle: const Text(
+      'Important information about using StillSpace.',
+    ),
+    trailing: const Icon(Icons.arrow_forward_ios),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const WellnessSafetyScreen(),
+        ),
+      );
+    },
+  ),
+),
+    
 
         ],
       ),
@@ -1534,6 +1556,81 @@ class PrivacyPolicyScreen extends StatelessWidget {
             'Take things one moment at a time.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class WellnessSafetyScreen extends StatelessWidget {
+  const WellnessSafetyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mental Wellness & Safety'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: const [
+          Text(
+            'Your Wellbeing Matters',
+            style: TextStyle(
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            'StillSpace is designed to support relaxation, '
+            'reflection and everyday emotional wellbeing.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Important Information',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'StillSpace is not a medical service. It does not '
+            'diagnose or treat mental health conditions and '
+            'is not a replacement for professional care.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Getting Support',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'If you are feeling overwhelmed, consider speaking '
+            'with someone you trust, a school counsellor or a '
+            'qualified healthcare professional.',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Urgent Help',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'If you feel unsafe or need urgent help, contact '
+            'local emergency services or tell a trusted adult '
+            'immediately.',
+            style: TextStyle(fontSize: 16),
           ),
         ],
       ),
