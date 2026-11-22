@@ -76,70 +76,194 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const cardColors = [
+      Color(0xFFE8F0E8),
+      Color(0xFFF1EEE3),
+      Color(0xFFE9EFF0),
+      Color(0xFFF2E9E5),
+      Color(0xFFEDEAF2),
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(22),
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
+
             const Text(
               'StillSpace 🌿',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF526F5C)),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF526F5C),
+              ),
             ),
-            const SizedBox(height: 10),
-            const Text('Take a breath. You are here.', style: TextStyle(fontSize: 17)),
+
+            const SizedBox(height: 8),
+
+            const Text(
+              'A little space for yourself.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF68776B),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE4EDE4),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Take a breath. You are here. 🌱',
+                    style: TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF405D49),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'You deserve a moment of peace. '
+                    'Take things one step at a time.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: Color(0xFF526F5C),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 30),
+
             const Text(
               'How are you feeling today?',
-              style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 18),
-            ...moods.map((mood) => Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(14),
-                leading: Text(mood['emoji'], style: const TextStyle(fontSize: 30)),
-                title: Text(mood['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                
-onTap: () async {
-  final prefs = await SharedPreferences.getInstance();
-
-  final history = prefs.getStringList('mood_history') ?? [];
-
-  final now = DateTime.now();
-
-  final today =
-      '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-
-  final selectedMood = mood['name'].toString();
-
-  // Keep only one mood entry per day.
-  history.removeWhere((entry) => entry.startsWith('$today|'));
-
-  history.add('$today|$selectedMood');
-
-  await prefs.setStringList('mood_history', history);
-
-  if (!context.mounted) return;
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => ActivitiesScreen(
-        mood: mood['name'],
-        activities: List<String>.from(mood['activities']),
-      ),
-    ),
-  );
-},
+              style: TextStyle(
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF354B3B),
               ),
-            )),
+            ),
+
+            const SizedBox(height: 8),
+
+            const Text(
+              'Choose the feeling that best describes your day.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF68776B),
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            ...moods.asMap().entries.map((entry) {
+              final mood = entry.value;
+              final cardColor =
+                  cardColors[entry.key % cardColors.length];
+
+              return Card(
+                color: cardColor,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 13),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 10,
+                  ),
+                  leading: Text(
+                    mood['emoji'],
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                  title: Text(
+                    mood['name'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF354B3B),
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 17,
+                    color: Color(0xFF526F5C),
+                  ),
+                  onTap: () async {
+                    final prefs =
+                        await SharedPreferences.getInstance();
+
+                    final history =
+                        prefs.getStringList('mood_history') ?? [];
+
+                    final now = DateTime.now();
+
+                    final today =
+                        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+                    final selectedMood =
+                        mood['name'].toString();
+
+                    history.removeWhere(
+                      (entry) => entry.startsWith('$today|'),
+                    );
+
+                    history.add('$today|$selectedMood');
+
+                    await prefs.setStringList(
+                      'mood_history',
+                      history,
+                    );
+
+                    if (!context.mounted) return;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ActivitiesScreen(
+                          mood: selectedMood,
+                          activities:
+                              List<String>.from(mood['activities']),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
+
+            const SizedBox(height: 20),
+
+            const Center(
+              child: Text(
+                'One moment at a time. 💚',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFF68776B),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 15),
           ],
         ),
       ),
     );
   }
 }
+
+
 class ActivitiesScreen extends StatelessWidget {
   final String mood;
   final List<String> activities;
