@@ -104,6 +104,25 @@ class HomeScreen extends StatelessWidget {
     required this.onThemeChanged,
   });
 
+  static const List<String> dailyMessages = [
+    'You do not have to figure everything out today.',
+    'Small steps still move you forward.',
+    'Give yourself permission to pause.',
+    'Every day is a fresh opportunity.',
+    'You deserve kindness, including from yourself.',
+    'Take things one moment at a time.',
+    'Progress does not have to be perfect.',
+    'It is okay to take things slowly.',
+  ];
+
+  String get todaysMessage {
+    final day = DateTime.now().difference(
+      DateTime(DateTime.now().year, 1, 1),
+    ).inDays;
+
+    return dailyMessages[day % dailyMessages.length];
+  }
+
   final List<Map<String, dynamic>> moods = const [
     {'name': 'Calm', 'emoji': '😌', 'activities': ['Gratitude Moment', 'Mindful Walking', 'Positive Reflection']},
     {'name': 'Happy', 'emoji': '😊', 'activities': ['Happy Memories', 'Celebrate Yourself', 'Share Kindness']},
@@ -111,7 +130,6 @@ class HomeScreen extends StatelessWidget {
     {'name': 'Anxious', 'emoji': '😟', 'activities': ['Breathing Exercise', '5 Senses Grounding', 'Calm Thoughts']},
     {'name': 'Low', 'emoji': '😔', 'activities': ['Small Positive Steps', 'Self Kindness', 'Reach Out to Someone']},
   ];
-
   @override
   Widget build(BuildContext context) {
     const cardColors = [
@@ -128,6 +146,7 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(22),
           children: [
             const SizedBox(height: 15),
+
 Row(
   mainAxisAlignment: MainAxisAlignment.spaceBetween,
   children: [
@@ -158,6 +177,39 @@ Row(
     ),
   ],
 ),
+
+const SizedBox(height: 18),
+
+Card(
+  color: const Color(0xFFE8F0E8),
+  child: Padding(
+    padding: const EdgeInsets.all(18),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'A thought for today 🌿',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF526F5C),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          todaysMessage,
+          style: const TextStyle(
+            fontSize: 17,
+            color: Color(0xFF354B3B),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+
+const SizedBox(height: 20),
+
             
             const SizedBox(height: 8),
 
@@ -1539,8 +1591,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
-          const SizedBox(height: 8),
 
           const Text(
             'For privacy questions, please contact the '
