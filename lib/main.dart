@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   runApp(const StillSpaceApp());
 }
@@ -100,38 +101,38 @@ class HomeScreen extends StatelessWidget {
                 leading: Text(mood['emoji'], style: const TextStyle(fontSize: 30)),
                 title: Text(mood['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                 trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ActivitiesScreen(
-                        mood: mood['name'],
-                        activities: List<String>.from(mood['activities']),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )),
-            const SizedBox(height: 12),
-            Card(
-              child: ListTile( 
-                leading: const Icon(Icons.air, size: 32),
-                title: const Text('Breathing Coach'),
-                subtitle: const Text('Take a peaceful moment.'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const BreathingScreen()),
-                ),
-              ),
-            ),
-          ],
-        ),
+                
+onTap: () async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final history = prefs.getStringList('mood_history') ?? [];
+
+  final now = DateTime.now();
+
+  final today =
+      '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+  final selectedMood = mood['name'].toString();
+
+  // Keep only one mood entry per day.
+  history.removeWhere((entry) => entry.startsWith('$today|'));
+
+  history.add('$today|$selectedMood');
+
+  await prefs.setStringList('mood_history', history);
+
+  if (!context.mounted) return;
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ActivitiesScreen(
+        mood: mood['name'],
+        activities: List<String>.from(mood['activities']),
       ),
-    );
-  }
-}
+    ),
+  );
+},
 
 class ActivitiesScreen extends StatelessWidget {
   final String mood;
