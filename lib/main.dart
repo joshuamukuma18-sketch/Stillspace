@@ -13,15 +13,43 @@ class StillSpaceApp extends StatefulWidget {
   @override
   State<StillSpaceApp> createState() => _StillSpaceAppState();
 }
-
 class _StillSpaceAppState extends State<StillSpaceApp> {
   ThemeMode _themeMode = ThemeMode.system;
-  void changeTheme(ThemeMode mode) {
-  setState(() {
-    _themeMode = mode;
-  });
+
+  Future<void> changeTheme(ThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('app_theme', mode.name);
+
+    if (!mounted) return;
+
+    setState(() {
+      _themeMode = mode;
+    });
+  }
+@override
+void initState() {
+  super.initState();
+  loadTheme();
 }
 
+Future<void> loadTheme() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final savedTheme = prefs.getString('app_theme');
+
+  if (!mounted) return;
+
+  setState(() {
+    if (savedTheme == 'light') {
+      _themeMode = ThemeMode.light;
+    } else if (savedTheme == 'dark') {
+      _themeMode = ThemeMode.dark;
+    } else {
+      _themeMode = ThemeMode.system;
+    }
+  });
+}
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
