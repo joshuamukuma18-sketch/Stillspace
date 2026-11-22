@@ -775,20 +775,255 @@ class SettingsScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.calendar_month),
+    title: const Text('Mood History'),
+    subtitle: const Text(
+      'View your recorded moods on a calendar.',
+    ),
+    trailing: const Icon(Icons.arrow_forward_ios),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const MoodHistoryScreen(),
+        ),
+      );
+    },
+  ),
+),
+          
+        ],
+      ),
+    );
+  }
+}
 
-          const Card(
-            child: ListTile(
-              leading: Icon(Icons.lock_outline),
-              title: Text('Mood history'),
-              subtitle: Text(
-                'Your mood history is stored locally '
-                'on your device.',
+class MoodHistoryScreen extends StatefulWidget {
+  const MoodHistoryScreen({super.key});
+
+  @override
+  State<MoodHistoryScreen> createState() =>
+      _MoodHistoryScreenState();
+}
+
+class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
+  DateTime selectedMonth = DateTime.now();
+
+  Map<String, String> moodHistory = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadMoodHistory();
+  }
+
+  Future<void> loadMoodHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final history = prefs.getStringList('mood_history') ?? [];
+
+    final Map<String, String> loadedHistory = {};
+
+    for (final entry in history) {
+      final parts = entry.split('|');
+
+      if (parts.length == 2) {
+        loadedHistory[parts[0]] = parts[1];
+      }
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      moodHistory = loadedHistory;
+    });
+  }
+
+  String dateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  void changeMonth(int amount) {
+    setState(() {
+      selectedMonth = DateTime(
+        selectedMonth.year,
+        selectedMonth.month + amount,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final firstDay = DateTime(
+      selectedMonth.year,
+      selectedMonth.month,
+      1,
+    );
+
+    final daysInMonth = DateTime(
+      selectedMonth.year,
+      selectedMonth.month + 1,
+      0,
+    ).day;
+
+    final startingWeekday = firstDay.weekday - 1;
+
+    const weekdays = [
+      'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mood History'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () => changeMonth(-1),
+                icon: const Icon(Icons.chevron_left),
               ),
+              Text(
+                '${_monthName(selectedMonth.month)} ${selectedMonth.year}',
+                style: const TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                onPressed: () => changeMonth(1),
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          GridView.count(
+            crossAxisCount: 7,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: weekdays.map((day) {
+              return Center(
+                child: Text(
+                  day,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 10),
+
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: startingWeekday + daysInMonth,
+            gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
             ),
+            itemBuilder: (context, index) {
+              if (index < startingWeekday) {
+                return const SizedBox();
+              }
+
+              final day = index - startingWeekday + 1;
+
+              final date = DateTime(
+                selectedMonth.year,
+                selectedMonth.month,
+                day,
+              );
+
+              final mood = moodHistory[dateKey(date)];
+
+              final emojis = {
+                'Calm': '😌',
+                'Happy': '😊',
+                'Okay': '🙂',
+                'Anxious': '😟',
+                'Low': '😔',
+              };
+
+              return GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text('Day $day'),
+                      content: Text(
+                        mood == null
+                            ? 'No mood recorded on this day.'
+                            : 'Recorded mood: $mood ${emojis[mood] ?? ''}',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.pop(context),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: mood == null
+                        ? const Color(0xFFF1F4EF)
+                        : const Color(0xFFE0EBE0),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$day',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (mood != null)
+                        Text(
+                          emojis[mood] ?? '•',
+                          style: const TextStyle(fontSize: 17),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 25),
+
+          const Text(
+            'Your mood journey, one day at a time. 🌿',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15),
           ),
         ],
       ),
     );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'January', 'February', 'March', 'April',
+      'May', 'June', 'July', 'August',
+      'September', 'October', 'November', 'December'
+    ];
+
+    return months[month - 1];
   }
 }
 
