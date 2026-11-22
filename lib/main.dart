@@ -16,6 +16,11 @@ class StillSpaceApp extends StatefulWidget {
 
 class _StillSpaceAppState extends State<StillSpaceApp> {
   ThemeMode _themeMode = ThemeMode.system;
+  void changeTheme(ThemeMode mode) {
+  setState(() {
+    _themeMode = mode;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +62,19 @@ class _StillSpaceAppState extends State<StillSpaceApp> {
   ),
 ),
 
-      home: const HomeScreen(),
+      home: HomeScreen(
+  onThemeChanged: changeTheme,
+),
     );
   }
 }
-
-
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final ValueChanged<ThemeMode> onThemeChanged;
+
+  const HomeScreen({
+    super.key,
+    required this.onThemeChanged,
+  });
 
   final List<Map<String, dynamic>> moods = const [
     {'name': 'Calm', 'emoji': '😌', 'activities': ['Gratitude Moment', 'Mindful Walking', 'Positive Reflection']},
@@ -90,16 +100,37 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(22),
           children: [
             const SizedBox(height: 15),
-
-            const Text(
-              'StillSpace 🌿',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF526F5C),
-              ),
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    const Text(
+      'StillSpace 🌿',
+      style: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF526F5C),
+      ),
+    ),
+    IconButton(
+      icon: const Icon(
+        Icons.settings,
+        color: Color(0xFF526F5C),
+        size: 28,
+      ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SettingsScreen(
+              onThemeChanged: onThemeChanged,
             ),
-
+          ),
+        );
+      },
+    ),
+  ],
+),
+            
             const SizedBox(height: 8),
 
             const Text(
@@ -627,4 +658,110 @@ class _BreathingScreenState extends State<BreathingScreen> {
     );
   }
 }
+
+class SettingsScreen extends StatelessWidget {
+  final ValueChanged<ThemeMode> onThemeChanged;
+
+  const SettingsScreen({
+    super.key,
+    required this.onThemeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'Appearance',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.light_mode),
+                  title: const Text('Light mode'),
+                  subtitle: const Text('Use a bright appearance'),
+                  onTap: () => onThemeChanged(ThemeMode.light),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.dark_mode),
+                  title: const Text('Dark mode'),
+                  subtitle: const Text('Use a darker appearance'),
+                  onTap: () => onThemeChanged(ThemeMode.dark),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.settings_suggest),
+                  title: const Text('System default'),
+                  subtitle: const Text('Follow your phone settings'),
+                  onTap: () => onThemeChanged(ThemeMode.system),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          const Text(
+            'About StillSpace',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          const Card(
+            child: ListTile(
+              leading: Icon(Icons.spa),
+              title: Text('StillSpace'),
+              subtitle: Text(
+                'A little space for yourself. '
+                'Take things one moment at a time.',
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            'Privacy',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          const Card(
+            child: ListTile(
+              leading: Icon(Icons.lock_outline),
+              title: Text('Mood history'),
+              subtitle: Text(
+                'Your mood history is stored locally '
+                'on your device.',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
