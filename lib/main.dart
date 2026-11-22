@@ -815,6 +815,27 @@ Card(
   ),
 ),
  
+const SizedBox(height: 10),
+
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.privacy_tip_outlined),
+    title: const Text('Privacy Policy'),
+    subtitle: const Text(
+      'Learn how StillSpace handles your information.',
+    ),
+    trailing: const Icon(Icons.arrow_forward_ios),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PrivacyPolicyScreen(),
+        ),
+      );
+    },
+  ),
+),
+
         ],
       ),
     );
@@ -1322,5 +1343,203 @@ class _MoodInsightsScreenState
     );
   }
 }
+
+class PrivacyPolicyScreen extends StatelessWidget {
+  const PrivacyPolicyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Privacy Policy'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'StillSpace Privacy Policy 🌿',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          const Text(
+            'Last updated: November 2026',
+            style: TextStyle(color: Colors.grey),
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '1. Introduction',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'Welcome to StillSpace. We respect your privacy '
+            'and aim to protect your personal information. '
+            'This policy explains how information is handled '
+            'when you use the app.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '2. Information Stored',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'StillSpace stores your selected daily moods '
+            'on your device using local app storage. '
+            'Your mood history is used to display your '
+            'Mood History calendar and Mood Insights.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '3. How Information Is Used',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'Information stored by the app helps you '
+            'review your mood entries and use the app '
+            'features. StillSpace is designed to support '
+            'personal reflection and general wellbeing.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '4. Sharing of Information',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'StillSpace does not currently provide a '
+            'feature for sharing your mood history with '
+            'other users. If advertising or other third-party '
+            'services are added, this policy must be updated '
+            'to explain what information those services '
+            'may collect and how it is used.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '5. Data Security and Control',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'Your mood history is stored locally on your '
+            'device. Anyone with access to your unlocked '
+            'device may be able to access information '
+            'stored in the app. Uninstalling the app or '
+            'clearing its data may remove locally stored '
+            'mood records.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '6. Children and Young Users',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'StillSpace aims to provide a respectful and '
+            'welcoming experience. The app should not '
+            'replace guidance from a trusted adult or '
+            'qualified professional when additional support '
+            'is needed.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '7. Changes to This Policy',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'This policy may be updated when StillSpace '
+            'features or services change. The latest version '
+            'should be made available to app users.',
+          ),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            '8. Contact',
+            style: TextStyle(
+              fontSize: 19, 
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'For privacy questions, please contact the '
+            'StillSpace app developer using the official '
+            'contact details provided with the app.',
+          ),
+
+          const SizedBox(height: 30),
+
+          const Text(
+            'StillSpace 🌿\n'
+            'A little space for yourself. '
+            'Take things one moment at a time.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 
