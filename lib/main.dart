@@ -42,20 +42,20 @@ class _StillSpaceAppState extends State<StillSpaceApp> {
       ),
 
       // DARK MODE
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF91A995),
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF30363D),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF30363D),
-          foregroundColor: Color(0xFFF2EDE2),
-          elevation: 0,
-        ),
-      ),
+    darkTheme: ThemeData(
+  useMaterial3: true,
+  brightness: Brightness.dark,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: const Color(0xFF78977F),
+    brightness: Brightness.dark,
+  ),
+  scaffoldBackgroundColor: const Color(0xFF26352D),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color(0xFF26352D),
+    foregroundColor: Color(0xFFF6F8F4),
+    elevation: 0,
+  ),
+),
 
       home: const HomeScreen(),
     );
