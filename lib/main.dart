@@ -793,7 +793,28 @@ Card(
     },
   ),
 ),
-          
+         
+const SizedBox(height: 10),
+
+Card(
+  child: ListTile(
+    leading: const Icon(Icons.insights),
+    title: const Text('Mood Insights'),
+    subtitle: const Text(
+      'See patterns in your recorded moods.',
+    ),
+    trailing: const Icon(Icons.arrow_forward_ios),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const MoodInsightsScreen(),
+        ),
+      );
+    },
+  ),
+),
+ 
         ],
       ),
     );
@@ -1024,6 +1045,281 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
     ];
 
     return months[month - 1];
+  }
+}
+
+class MoodInsightsScreen extends StatefulWidget {
+  const MoodInsightsScreen({super.key});
+
+  @override
+  State<MoodInsightsScreen> createState() =>
+      _MoodInsightsScreenState();
+}
+
+class _MoodInsightsScreenState
+    extends State<MoodInsightsScreen> {
+  DateTime selectedMonth = DateTime.now();
+
+  List<String> moodHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadMoodHistory();
+  }
+
+  Future<void> loadMoodHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final history =
+        prefs.getStringList('mood_history') ?? [];
+
+    if (!mounted) return;
+
+    setState(() {
+      moodHistory = history;
+    });
+  }
+
+  void changeMonth(int amount) {
+    setState(() {
+      selectedMonth = DateTime(
+        selectedMonth.year,
+        selectedMonth.month + amount,
+      );
+    });
+  }
+
+  String monthName(int month) {
+    const months = [
+      'January', 'February', 'March', 'April',
+      'May', 'June', 'July', 'August',
+      'September', 'October', 'November',
+      'December'
+    ];
+
+    return months[month - 1];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final monthKey =
+        '${selectedMonth.year}-${selectedMonth.month.toString().padLeft(2, '0')}';
+
+    final monthlyEntries = moodHistory.where((entry) {
+      return entry.startsWith('$monthKey-');
+    }).toList();
+
+    final moodCounts = <String, int>{
+      'Calm': 0,
+      'Happy': 0,
+      'Okay': 0,
+      'Anxious': 0,
+      'Low': 0,
+    };
+
+    for (final entry in monthlyEntries) {
+      final parts = entry.split('|');
+
+      if (parts.length == 2 &&
+          moodCounts.containsKey(parts[1])) {
+        moodCounts[parts[1]] =
+            moodCounts[parts[1]]! + 1;
+      }
+    }
+
+    String? mostCommonMood;
+    int highestCount = 0;
+
+    moodCounts.forEach((mood, count) {
+      if (count > highestCount) {
+        highestCount = count;
+        mostCommonMood = mood;
+      }
+    });
+
+    const emojis = {
+      'Calm': '😌',
+      'Happy': '😊',
+      'Okay': '🙂',
+      'Anxious': '😟',
+      'Low': '😔',
+    };
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mood Insights'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'Your Mood Journey 🌿',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          const Text(
+            'Explore the moods you have recorded '
+            'this month.',
+            style: TextStyle(fontSize: 15),
+          ),
+
+          const SizedBox(height: 25),
+
+          Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () => changeMonth(-1),
+                icon: const Icon(Icons.chevron_left),
+              ),
+              Text(
+                '${monthName(selectedMonth.month)} '
+                '${selectedMonth.year}',
+                style: const TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                onPressed: () => changeMonth(1),
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 15),
+
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.calendar_month),
+              title: const Text('Days recorded'),
+              subtitle: const Text(
+                'Days with a saved mood this month',
+              ),
+              trailing: Text(
+                '${monthlyEntries.length}',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.star_outline),
+              title: const Text('Most recorded mood'),
+              subtitle: Text(
+                mostCommonMood == null
+                    ? 'No moods recorded yet'
+                    : mostCommonMood!,
+              ),
+              trailing: Text(
+                mostCommonMood == null
+                    ? '—'
+                    : emojis[mostCommonMood]!,
+                style: const TextStyle(fontSize: 28),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          const Text(
+            'Mood Breakdown',
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          if (monthlyEntries.isEmpty)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'No moods recorded this month yet. '
+                  'Choose a mood on your home screen '
+                  'to start building your history.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+          ...moodCounts.entries.map((entry) {
+            final count = entry.value;
+
+            final progress = monthlyEntries.isEmpty
+                ? 0.0
+                : count / monthlyEntries.length;
+
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          emojis[entry.key]!,
+                          style: const TextStyle(
+                            fontSize: 23,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            entry.key,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text('$count days'),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 8,
+                      borderRadius:
+                          BorderRadius.circular(10),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 20),
+
+          const Text(
+            'Every feeling deserves attention. '
+            'Your mood records are here to help '
+            'you reflect, not to judge you. 🌿',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14),
+          ),
+        ],
+      ),
+    );
   }
 }
 
