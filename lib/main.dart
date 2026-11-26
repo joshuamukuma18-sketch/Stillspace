@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 void main() {
   runApp(const StillSpaceApp());
 }
@@ -400,12 +401,20 @@ class ActivitiesScreen extends StatelessWidget {
               leading: const Icon(Icons.spa),
               title: Text(activity),
               trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ActivityDetailScreen(title: activity),
-                ),
-              ),
+              onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) {
+        if (activity == 'Gratitude Moment') {
+          return const GratitudeScreen();
+        }
+
+        return ActivityDetailScreen(title: activity);
+      },
+    ),
+  );
+},
             ),
           )),
         ],
@@ -414,6 +423,285 @@ class ActivitiesScreen extends StatelessWidget {
   }
 }
 
+
+class GratitudeScreen extends StatefulWidget {
+  const GratitudeScreen({super.key});
+
+  @override
+  State<GratitudeScreen> createState() =>
+      _GratitudeScreenState();
+}
+
+class _GratitudeScreenState extends State<GratitudeScreen> {
+  final TextEditingController firstController =
+      TextEditingController();
+
+  final TextEditingController secondController =
+      TextEditingController();
+
+  final TextEditingController thirdController =
+      TextEditingController();
+
+  List<Map<String, dynamic>> savedEntries = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadEntries();
+  }
+
+  @override
+  void dispose() {
+    firstController.dispose();
+    secondController.dispose();
+    thirdController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loadEntries() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final entries =
+        prefs.getStringList('gratitude_entries') ?? [];
+
+    final loaded = <Map<String, dynamic>>[];
+
+    for (final entry in entries) {
+      try {
+        loaded.add(
+          Map<String, dynamic>.from(jsonDecode(entry)),
+        );
+      } catch (_) {
+        // Skip an unreadable entry.
+      }
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      savedEntries = loaded.reversed.toList();
+    });
+  }
+
+  Future<void> saveGratitude() async {
+    final first = firstController.text.trim();
+    final second = secondController.text.trim();
+    final third = thirdController.text.trim();
+
+    if (first.isEmpty || second.isEmpty || third.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please complete all three entries.'),
+        ),
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final entries =
+        prefs.getStringList('gratitude_entries') ?? [];
+
+    final newEntry = {
+      'date': DateTime.now().toIso8601String(),
+      'first': first,
+      'second': second,
+      'third': third,
+    };
+
+    entries.add(jsonEncode(newEntry));
+
+    await prefs.setStringList(
+      'gratitude_entries',
+      entries,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      savedEntries.insert(0, newEntry);
+    });
+
+    firstController.clear();
+    secondController.clear();
+    thirdController.clear();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Your gratitude has been saved! 🌿'),
+      ),
+    );
+  }
+
+  Widget gratitudeField(
+    String label,
+    String hint,
+    TextEditingController controller,
+    IconData icon,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 15),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.teal),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              maxLines: 2,
+              decoration: InputDecoration(
+                hintText: hint,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Gratitude Moment 🌿'),
+      ),
+
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'Find joy in the little things.',
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          const Text(
+            'Take a moment to think about three things '
+            'you appreciate today. They can be big or small.',
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          gratitudeField(
+            '1. Something I appreciate',
+            'I am grateful for...',
+            firstController,
+            Icons.favorite_outline,
+          ),
+
+          gratitudeField(
+            '2. Someone I appreciate',
+            'I appreciate...',
+            secondController,
+            Icons.people_outline,
+          ),
+
+          gratitudeField(
+            '3. Something that made me happy',
+            'One good moment was...',
+            thirdController,
+            Icons.wb_sunny_outlined,
+          ),
+
+          const SizedBox(height: 10),
+
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: saveGratitude,
+              icon: const Icon(Icons.save_outlined),
+              label: const Text('Save Gratitude'),
+            ),
+          ),
+
+          const SizedBox(height: 35),
+
+          const Text(
+            'My Gratitude Journal 🌱',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          if (savedEntries.isEmpty)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(18),
+                child: Text(
+                  'Your saved gratitude moments will appear here.',
+                ),
+              ),
+            ),
+
+          ...savedEntries.map((entry) {
+            final date = DateTime.parse(entry['date']);
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ExpansionTile(
+                leading: const Icon(
+                  Icons.spa,
+                  color: Colors.teal,
+                ),
+                title: Text(
+                  '${date.day}/${date.month}/${date.year}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: const Text('View your gratitude'),
+                childrenPadding:
+                    const EdgeInsets.all(16),
+                children: [
+                  ListTile(
+                    title: const Text('I appreciate'),
+                    subtitle: Text(entry['first']),
+                  ),
+                  ListTile(
+                    title: const Text('Someone I appreciate'),
+                    subtitle: Text(entry['second']),
+                  ),
+                  ListTile(
+                    title: const Text('A happy moment'),
+                    subtitle: Text(entry['third']),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
 
 class ActivityDetailScreen extends StatefulWidget {
   final String title;
