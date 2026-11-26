@@ -410,6 +410,10 @@ class ActivitiesScreen extends StatelessWidget {
           return const GratitudeScreen();
         }
 
+        if (activity == 'Mindful Walking') {
+          return const MindfulWalkingScreen();
+        }
+
         return ActivityDetailScreen(title: activity);
       },
     ),
@@ -697,6 +701,287 @@ class _GratitudeScreenState extends State<GratitudeScreen> {
               ),
             );
           }),
+        ],
+      ),
+    );
+  }
+}
+
+class MindfulWalkingScreen extends StatefulWidget {
+  const MindfulWalkingScreen({super.key});
+
+  @override
+  State<MindfulWalkingScreen> createState() =>
+      _MindfulWalkingScreenState();
+}
+
+class _MindfulWalkingScreenState
+    extends State<MindfulWalkingScreen> {
+  int currentStep = 0;
+  bool isIndoor = false;
+
+  final TextEditingController reflectionController =
+      TextEditingController();
+
+  final List<Map<String, String>> stages = [
+    {
+      'title': 'Begin Gently 🌿',
+      'description':
+          'Find a comfortable place to walk, indoors or outdoors. '
+          'Move at your own natural pace. There is no rush.',
+      'prompt': 'Take a moment to settle into the present.'
+    },
+    {
+      'title': 'Notice What You See 👀',
+      'description':
+          'Look around gently. Notice the colours, shapes, '
+          'patterns and little details around you.',
+      'prompt': 'What is one interesting thing you can see?'
+    },
+    {
+      'title': 'Listen Carefully 👂',
+      'description':
+          'Pause somewhere safe. Notice the sounds around you. '
+          'They might be birds, wind, voices or quiet sounds.',
+      'prompt': 'What sounds can you hear?'
+    },
+    {
+      'title': 'Notice How You Feel 🌱',
+      'description':
+          'Notice the feeling of your feet as you move. '
+          'Pay attention to the air and the space around you.',
+      'prompt': 'What do you notice about this moment?'
+    },
+    {
+      'title': 'Finish With Gratitude 💚',
+      'description':
+          'Slow down and take a comfortable pause. '
+          'Think of one small thing you appreciated during this activity.',
+      'prompt': 'What is one thing you enjoyed?'
+    },
+  ];
+
+  @override
+  void dispose() {
+    reflectionController.dispose();
+    super.dispose();
+  }
+
+  void nextStep() {
+    if (currentStep < stages.length - 1) {
+      setState(() {
+        currentStep++;
+      });
+    } else {
+      setState(() {
+        currentStep++;
+      });
+    }
+  }
+
+  void previousStep() {
+    if (currentStep > 0) {
+      setState(() {
+        currentStep--;
+      });
+    }
+  }
+
+  void finishActivity() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Well done! 🌿'),
+        content: const Text(
+          'You completed your Mindful Walking activity. '
+          'Thank yourself for taking this little moment.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(this.context);
+            },
+            child: const Text('Finish'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool completed = currentStep >= stages.length;
+    final double progress =
+        completed ? 1.0 : (currentStep + 1) / stages.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mindful Walking 🌿'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(22),
+        children: [
+          if (!completed) ...[
+            const Text(
+              'Take a gentle moment for yourself.',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Choose a safe place and move at a pace '
+              'that feels comfortable. You can also do '
+              'this activity while standing or sitting.',
+              style: TextStyle(fontSize: 16, height: 1.5),
+            ),
+            const SizedBox(height: 22),
+
+            Card(
+              child: SwitchListTile(
+                title: const Text('Indoor activity'),
+                subtitle: const Text(
+                  'Choose this if you are staying indoors.',
+                ),
+                value: isIndoor,
+                onChanged: (value) {
+                  setState(() {
+                    isIndoor = value;
+                  });
+                },
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            const SizedBox(height: 12),
+
+            Text(
+              'Step ${currentStep + 1} of ${stages.length}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stages[currentStep]['title']!,
+                      style: const TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      stages[currentStep]['description']!,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        height: 1.6,
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        stages[currentStep]['prompt']!,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Row(
+              children: [
+                if (currentStep > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: previousStep,
+                      child: const Text('Previous'),
+                    ),
+                  ),
+                if (currentStep > 0)
+                  const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: nextStep,
+                    child: Text(
+                      currentStep == stages.length - 1
+                          ? 'Finish Activity'
+                          : 'Next Step',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const Icon(
+              Icons.spa,
+              size: 75,
+              color: Colors.teal,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'You made time for yourself! 💚',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              'Before you finish, take a moment to reflect '
+              'on your experience.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 25),
+            TextField(
+              controller: reflectionController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'My reflection',
+                hintText: 'I noticed...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 25),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: finishActivity,
+                child: const Text('Complete Activity'),
+              ),
+            ),
+          ],
         ],
       ),
     );
