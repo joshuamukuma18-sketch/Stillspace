@@ -414,32 +414,183 @@ class ActivitiesScreen extends StatelessWidget {
   }
 }
 
-class ActivityDetailScreen extends StatelessWidget {
+
+class ActivityDetailScreen extends StatefulWidget {
   final String title;
 
-  const ActivityDetailScreen({super.key, required this.title});
+  const ActivityDetailScreen({
+    super.key,
+    required this.title,
+  });
+
+  @override
+  State<ActivityDetailScreen> createState() =>
+      _ActivityDetailScreenState();
+}
+
+class _ActivityDetailScreenState
+    extends State<ActivityDetailScreen> {
+
+  int currentStep = 0;
+
+  final TextEditingController reflectionController =
+      TextEditingController();
+
+  final List<String> steps = [
+    'Find a comfortable place and give yourself a moment to settle.',
+    'Take a slow breath and focus on the present moment.',
+    'Think about one small thing you would like to appreciate or notice today.',
+    'Take your time. There is no pressure to get anything right.',
+  ];
+
+  @override
+  void dispose() {
+    reflectionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    bool isLastStep = currentStep == steps.length;
+
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+
       body: Padding(
         padding: const EdgeInsets.all(24),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
-            Text(title, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            const Text(
-              'Take your time with this activity. There is no pressure to get everything right. Go at a comfortable pace.',
-              style: TextStyle(fontSize: 18, height: 1.5),
+
+            Text(
+              widget.title,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const Spacer(),
+
+            const SizedBox(height: 25),
+
+            LinearProgressIndicator(
+              value: (currentStep + 1) /
+                  (steps.length + 1),
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            const SizedBox(height: 15),
+
+            Text(
+              'Step ${currentStep + 1} of ${steps.length + 1}',
+              style: const TextStyle(fontSize: 15),
+            ),
+
+            const SizedBox(height: 35),
+
+            Expanded(
+              child: SingleChildScrollView(
+                child: isLastStep
+                    ? Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+
+                          const Text(
+                            'Your Reflection 🌿',
+                            style: TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          const Text(
+                            'How did this activity make you feel? '
+                            'Write anything you would like to remember.',
+                            style: TextStyle(
+                              fontSize: 17,
+                              height: 1.5,
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          TextField(
+                            controller: reflectionController,
+                            maxLines: 5,
+                            decoration: const InputDecoration(
+                              hintText: 'Write your thoughts here...',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        steps[currentStep],
+                        style: const TextStyle(
+                          fontSize: 21,
+                          height: 1.6,
+                        ),
+                      ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            if (currentStep > 0)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      currentStep--;
+                    });
+                  },
+                  child: const Text('Previous'),
+                ),
+              ),
+
+            const SizedBox(height: 8),
+
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Finish Activity'),
+                onPressed: () {
+                  if (!isLastStep) {
+                    setState(() {
+                      currentStep++;
+                    });
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Well Done! 🌿'),
+                        content: const Text(
+                          'You have completed this activity. '
+                          'Thank yourself for taking this time.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Finish'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  isLastStep ? 'Complete Activity' : 'Next Step',
+                ),
               ),
             ),
           ],
