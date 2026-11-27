@@ -426,7 +426,10 @@ if (activity == 'Positive Reflection') {
 }   
   if (activity == 'Happy Memories') {
   return const HappyMemoriesScreen();
-}      
+}     
+ if (activity == 'Celebrate Yourself') {
+  return const CelebrateYourselfScreen();
+}       
 
 return ActivityDetailScreen(title: activity);
       },
@@ -1620,6 +1623,219 @@ class _HappyMemoriesScreenState
             FilledButton(
               onPressed: restartActivity,
               child: const Text('Remember Again'),
+            ),
+
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Back to Activities'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class CelebrateYourselfScreen extends StatefulWidget {
+  const CelebrateYourselfScreen({super.key});
+
+  @override
+  State<CelebrateYourselfScreen> createState() =>
+      _CelebrateYourselfScreenState();
+}
+
+class _CelebrateYourselfScreenState
+    extends State<CelebrateYourselfScreen> {
+
+  int currentQuestion = 0;
+
+  final TextEditingController answerController =
+      TextEditingController();
+
+  final List<String> questions = [
+    'What is something you accomplished recently? 🌟',
+    'What is a challenge you handled well? 💚',
+    'What is something you have learned about yourself? 🌱',
+    'What is one quality you appreciate about yourself? 🌸',
+    'What is one small achievement you want to celebrate today? 🎉',
+  ];
+
+  final List<String> answers = [];
+
+  @override
+  void dispose() {
+    answerController.dispose();
+    super.dispose();
+  }
+
+  void nextQuestion() {
+    answers.add(answerController.text.trim());
+
+    setState(() {
+      currentQuestion++;
+      answerController.clear();
+    });
+  }
+
+  void previousQuestion() {
+    if (currentQuestion > 0) {
+      setState(() {
+        currentQuestion--;
+        answerController.text = answers[currentQuestion];
+        answers.removeLast();
+      });
+    }
+  }
+
+  void restartActivity() {
+    setState(() {
+      currentQuestion = 0;
+      answers.clear();
+      answerController.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool completed =
+        currentQuestion >= questions.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Celebrate Yourself 🎉'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          if (!completed) ...[
+            const Text(
+              'Every little achievement matters! 💚',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Take some time to recognise your efforts, '
+              'growth and the little things you have '
+              'accomplished. You deserve to appreciate '
+              'your progress.',
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            LinearProgressIndicator(
+              value: (currentQuestion + 1) /
+                  questions.length,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            const SizedBox(height: 15),
+
+            Text(
+              'Question ${currentQuestion + 1} '
+              'of ${questions.length}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Text(
+                  questions[currentQuestion],
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            TextField(
+              controller: answerController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Write your answer here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Row(
+              children: [
+                if (currentQuestion > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: previousQuestion,
+                      child: const Text('Previous'),
+                    ),
+                  ),
+
+                if (currentQuestion > 0)
+                  const SizedBox(width: 12),
+
+                Expanded(
+                  child: FilledButton(
+                    onPressed: nextQuestion,
+                    child: Text(
+                      currentQuestion ==
+                              questions.length - 1
+                          ? 'Complete'
+                          : 'Next',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const Icon(
+              Icons.celebration,
+              size: 80,
+              color: Colors.teal,
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'You Are Worth Celebrating! 🎉',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              'Take pride in the progress you have made. '
+              'Every step, no matter how small, '
+              'is worth recognising.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+
+            const SizedBox(height: 25),
+
+            FilledButton(
+              onPressed: restartActivity,
+              child: const Text('Celebrate Again'),
             ),
 
             TextButton(
