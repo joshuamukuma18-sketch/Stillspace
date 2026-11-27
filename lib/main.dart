@@ -411,10 +411,14 @@ class ActivitiesScreen extends StatelessWidget {
         }
 
         if (activity == 'Mindful Walking') {
-          return const MindfulWalkingScreen();
-        }
+  return const MindfulWalkingScreen();
+}
 
-        return ActivityDetailScreen(title: activity);
+if (activity == 'Mindful Breathing') {
+  return const BreathingScreen();
+}
+
+return ActivityDetailScreen(title: activity);
       },
     ),
   );
