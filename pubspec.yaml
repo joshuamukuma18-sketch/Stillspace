@@ -20,6 +20,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
  
 
 flutter:
@@ -29,3 +30,9 @@ flutter_launcher_icons:
   android: true
   ios: false 
   image_path: "assets/836FDC1F-C202-476D-AF76-12FF019E0609.png"
+flutter_native_splash:
+  color: "#F2EDE2"
+  color_dark: "#26352D"
+  android: true
+  ios: false
+  fullscreen: true
