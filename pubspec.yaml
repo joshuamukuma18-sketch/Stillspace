@@ -27,5 +27,5 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  ios: true
+  ios: false 
   image_path: "assets/836FDC1F-C202-476D-AF76-12FF019E0609.png"
