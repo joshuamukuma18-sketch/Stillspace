@@ -430,7 +430,9 @@ if (activity == 'Positive Reflection') {
  if (activity == 'Celebrate Yourself') {
   return const CelebrateYourselfScreen();
 }       
-
+if (activity == 'Share Kindness') {
+  return const ShareKindnessScreen();
+}
 return ActivityDetailScreen(title: activity);
       },
     ),
@@ -1836,6 +1838,271 @@ class _CelebrateYourselfScreenState
             FilledButton(
               onPressed: restartActivity,
               child: const Text('Celebrate Again'),
+            ),
+
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Back to Activities'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class ShareKindnessScreen extends StatefulWidget {
+  const ShareKindnessScreen({super.key});
+
+  @override
+  State<ShareKindnessScreen> createState() =>
+      _ShareKindnessScreenState();
+}
+
+class _ShareKindnessScreenState
+    extends State<ShareKindnessScreen> {
+
+  int currentStep = 0;
+
+  final TextEditingController reflectionController =
+      TextEditingController();
+
+  final List<Map<String, String>> activities = [
+    {
+      'title': 'Offer Encouragement 💚',
+      'description':
+          'Think of someone who might appreciate '
+          'a few encouraging words. Write something '
+          'kind you could say to them.',
+      'prompt': 'What encouraging words would you share?'
+    },
+    {
+      'title': 'Show Appreciation 🌸',
+      'description':
+          'Think about someone who has helped you '
+          'or made your day better. Consider telling '
+          'them how much you appreciate them.',
+      'prompt': 'Who would you like to appreciate?'
+    },
+    {
+      'title': 'Share Your Time 🌿',
+      'description':
+          'Think of a simple way to spend quality time '
+          'with someone, such as having a conversation '
+          'or listening to them.',
+      'prompt': 'How could you make time for someone?'
+    },
+    {
+      'title': 'Help Someone ☀️',
+      'description':
+          'Consider a small, safe and thoughtful way '
+          'to help someone in your everyday life.',
+      'prompt': 'What helpful action could you take?'
+    },
+    {
+      'title': 'Reflect on Kindness 💛',
+      'description':
+          'Think about how small acts of kindness '
+          'can make everyday experiences better.',
+      'prompt': 'What does kindness mean to you?'
+    },
+  ];
+
+  final List<String> responses = [];
+
+  @override
+  void dispose() {
+    reflectionController.dispose();
+    super.dispose();
+  }
+
+  void nextStep() {
+    responses.add(reflectionController.text.trim());
+
+    setState(() {
+      currentStep++;
+      reflectionController.clear();
+    });
+  }
+
+  void previousStep() {
+    if (currentStep > 0) {
+      setState(() {
+        currentStep--;
+        reflectionController.text = responses[currentStep];
+        responses.removeLast();
+      });
+    }
+  }
+
+  void restartActivity() {
+    setState(() {
+      currentStep = 0;
+      responses.clear();
+      reflectionController.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool completed = currentStep >= activities.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Share Kindness 💚'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          if (!completed) ...[
+            const Text(
+              'A little kindness goes a long way.',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Explore simple ways to bring kindness '
+              'into everyday life. Choose actions that '
+              'feel comfortable and appropriate.',
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            LinearProgressIndicator(
+              value: (currentStep + 1) / activities.length,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            const SizedBox(height: 15),
+
+            Text(
+              'Activity ${currentStep + 1} of ${activities.length}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      activities[currentStep]['title']!,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    Text(
+                      activities[currentStep]['description']!,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        height: 1.5,
+                      ),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    Text(
+                      activities[currentStep]['prompt']!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            TextField(
+              controller: reflectionController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Write your thoughts here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Row(
+              children: [
+                if (currentStep > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: previousStep,
+                      child: const Text('Previous'),
+                    ),
+                  ),
+
+                if (currentStep > 0)
+                  const SizedBox(width: 12),
+
+                Expanded(
+                  child: FilledButton(
+                    onPressed: nextStep,
+                    child: Text(
+                      currentStep == activities.length - 1
+                          ? 'Complete'
+                          : 'Next',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const Icon(
+              Icons.volunteer_activism,
+              size: 80,
+              color: Colors.teal,
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'Kindness Starts With You! 💚',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              'Thank yourself for taking time to '
+              'think about others. Even small acts '
+              'of kindness can make a difference.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+
+            const SizedBox(height: 25),
+
+            FilledButton(
+              onPressed: restartActivity,
+              child: const Text('Try Again'),
             ),
 
             TextButton(
