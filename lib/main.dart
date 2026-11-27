@@ -406,16 +406,20 @@ class ActivitiesScreen extends StatelessWidget {
     context,
     MaterialPageRoute(
       builder: (_) {
-        if (activity == 'Gratitude Moment') {
-          return const GratitudeScreen();
-        }
+     if (activity == 'Gratitude Moment') {
+  return const GratitudeScreen();
+}
 
-        if (activity == 'Mindful Walking') {
+if (activity == 'Mindful Walking') {
   return const MindfulWalkingScreen();
 }
 
 if (activity == 'Mindful Breathing') {
   return const BreathingScreen();
+}
+
+if (activity == 'Positive Reflection') {
+  return const PositiveReflectionScreen();
 }
 
 return ActivityDetailScreen(title: activity);
