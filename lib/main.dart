@@ -423,7 +423,10 @@ if (activity == 'Positive Reflection') {
 }
  if (activity == 'Daily Reflection') {
   return const DailyReflectionScreen();
-}       
+}   
+  if (activity == 'Happy Memories') {
+  return const HappyMemoriesScreen();
+}      
 
 return ActivityDetailScreen(title: activity);
       },
@@ -1405,6 +1408,218 @@ class _DailyReflectionScreenState
             FilledButton(
               onPressed: restartReflection,
               child: const Text('Reflect Again'),
+            ),
+
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Back to Activities'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class HappyMemoriesScreen extends StatefulWidget {
+  const HappyMemoriesScreen({super.key});
+
+  @override
+  State<HappyMemoriesScreen> createState() =>
+      _HappyMemoriesScreenState();
+}
+
+class _HappyMemoriesScreenState
+    extends State<HappyMemoriesScreen> {
+
+  int currentQuestion = 0;
+
+  final TextEditingController memoryController =
+      TextEditingController();
+
+  final List<String> questions = [
+    'What is one moment that made you smile recently? 😊',
+    'Who is someone who makes you feel appreciated? 💚',
+    'What is a fun experience you would love to remember? 🌸',
+    'What is a small achievement you are proud of? 🌟',
+    'What is one beautiful moment you hope to experience again? 🌿',
+  ];
+
+  final List<String> memories = [];
+
+  @override
+  void dispose() {
+    memoryController.dispose();
+    super.dispose();
+  }
+
+  void nextQuestion() {
+    memories.add(memoryController.text.trim());
+
+    setState(() {
+      currentQuestion++;
+      memoryController.clear();
+    });
+  }
+
+  void previousQuestion() {
+    if (currentQuestion > 0) {
+      setState(() {
+        currentQuestion--;
+        memoryController.text = memories[currentQuestion];
+        memories.removeLast();
+      });
+    }
+  }
+
+  void restartActivity() {
+    setState(() {
+      currentQuestion = 0;
+      memories.clear();
+      memoryController.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool completed =
+        currentQuestion >= questions.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Happy Memories 😊'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          if (!completed) ...[
+            const Text(
+              'Remember the little things. 💚',
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Take a gentle moment to revisit '
+              'experiences that brought you joy. '
+              'Write as much or as little as you like.',
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            LinearProgressIndicator(
+              value: (currentQuestion + 1) /
+                  questions.length,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            const SizedBox(height: 15),
+
+            Text(
+              'Memory ${currentQuestion + 1} '
+              'of ${questions.length}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Text(
+                  questions[currentQuestion],
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            TextField(
+              controller: memoryController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Write about your memory...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Row(
+              children: [
+                if (currentQuestion > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: previousQuestion,
+                      child: const Text('Previous'),
+                    ),
+                  ),
+
+                if (currentQuestion > 0)
+                  const SizedBox(width: 12),
+
+                Expanded(
+                  child: FilledButton(
+                    onPressed: nextQuestion,
+                    child: Text(
+                      currentQuestion ==
+                              questions.length - 1
+                          ? 'Complete'
+                          : 'Next',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const Icon(
+              Icons.favorite,
+              size: 75,
+              color: Colors.teal,
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'Beautiful Memories! 💚',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              'Thank yourself for taking time '
+              'to appreciate meaningful moments. '
+              'Keep making room for new memories.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+
+            const SizedBox(height: 25),
+
+            FilledButton(
+              onPressed: restartActivity,
+              child: const Text('Remember Again'),
             ),
 
             TextButton(
