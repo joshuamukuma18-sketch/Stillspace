@@ -2647,6 +2647,605 @@ class _CalmThoughtsScreenState
   }
 }
 
+class SmallPositiveStepsScreen extends StatefulWidget {
+  const SmallPositiveStepsScreen({super.key});
+
+  @override
+  State<SmallPositiveStepsScreen> createState() =>
+      _SmallPositiveStepsScreenState();
+}
+
+class _SmallPositiveStepsScreenState
+    extends State<SmallPositiveStepsScreen> {
+  final List<String> steps = [
+    'Drink a glass of water',
+    'Step outside for some fresh air',
+    'Listen to a song you enjoy',
+    'Tidy one small area',
+    'Write down something you appreciate',
+    'Take a few comfortable breaths',
+  ];
+
+  final Set<int> completedSteps = {};
+  final TextEditingController reflectionController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    reflectionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = completedSteps.length / steps.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Small Positive Steps'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Small steps still count 🌱',
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'You do not have to do everything at once. '
+              'Choose one small thing that feels manageable today.',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 25),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Your progress',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 9,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${completedSteps.length} of ${steps.length} steps completed',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+            const Text(
+              'Choose a small step',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            ...List.generate(steps.length, (index) {
+              final isCompleted =
+                  completedSteps.contains(index);
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: CheckboxListTile(
+                  value: isCompleted,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  title: Text(
+                    steps[index],
+                    style: TextStyle(
+                      decoration: isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value == true) {
+                        completedSteps.add(index);
+                      } else {
+                        completedSteps.remove(index);
+                      }
+                    });
+                  },
+                ),
+              );
+            }),
+
+            const SizedBox(height: 20),
+            const Text(
+              'A little reflection',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'How did taking a small step make you feel?',
+            ),
+            const SizedBox(height: 10),
+
+            TextField(
+              controller: reflectionController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Write your thoughts here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (completedSteps.isEmpty &&
+                      reflectionController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Choose a step or write a reflection first.',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Well done! 🌿'),
+                      content: const Text(
+                        'Every small step matters. '
+                        'Give yourself credit for showing up today.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Continue'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('Finish Activity'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    completedSteps.clear();
+                    reflectionController.clear();
+                  });
+                },
+                child: const Text('Start Again'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SelfKindnessScreen extends StatefulWidget {
+  const SelfKindnessScreen({super.key});
+
+  @override
+  State<SelfKindnessScreen> createState() =>
+      _SelfKindnessScreenState();
+}
+
+class _SelfKindnessScreenState
+    extends State<SelfKindnessScreen> {
+  final List<String> reminders = [
+    'I am allowed to learn at my own pace.',
+    'I do not have to be perfect.',
+    'My feelings deserve kindness.',
+    'Rest is important too.',
+    'I can take things one step at a time.',
+  ];
+
+  int selectedReminder = -1;
+  final TextEditingController messageController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Self Kindness'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Be gentle with yourself 🌷',
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Take a moment to practise speaking to yourself '
+              'with the same kindness you would offer someone else.',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 25),
+
+            const Text(
+              'Choose a kind reminder',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            ...List.generate(reminders.length, (index) {
+              final selected = selectedReminder == index;
+
+              return Card(
+                color: selected
+                    ? Theme.of(context).colorScheme.primaryContainer
+                    : null,
+                child: ListTile(
+                  leading: Icon(
+                    selected
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                  title: Text(reminders[index]),
+                  trailing: selected
+                      ? const Icon(Icons.check_circle)
+                      : const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    setState(() {
+                      selectedReminder = index;
+                    });
+                  },
+                ),
+              );
+            }),
+
+            const SizedBox(height: 24),
+            const Text(
+              'Write yourself a kind message',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'What is something supportive you would like '
+              'to tell yourself today?',
+            ),
+            const SizedBox(height: 12),
+
+            TextField(
+              controller: messageController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Write your kind message here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (selectedReminder == -1 &&
+                      messageController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Choose a reminder or write a message first.',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('A moment of kindness 🌿'),
+                      content: const Text(
+                        'Thank you for taking time to treat yourself '
+                        'with kindness. Carry that gentle reminder '
+                        'with you today.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Done'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.favorite),
+                label: const Text('Complete Activity'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    selectedReminder = -1;
+                    messageController.clear();
+                  });
+                },
+                child: const Text('Start Again'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ReachOutScreen extends StatefulWidget {
+  const ReachOutScreen({super.key});
+
+  @override
+  State<ReachOutScreen> createState() =>
+      _ReachOutScreenState();
+}
+
+class _ReachOutScreenState extends State<ReachOutScreen> {
+  final TextEditingController personController =
+      TextEditingController();
+
+  final TextEditingController messageController =
+      TextEditingController();
+
+  String selectedMethod = 'In person';
+
+  final List<String> methods = [
+    'In person',
+    'Phone call',
+    'Text message',
+  ];
+
+  @override
+  void dispose() {
+    personController.dispose();
+    messageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Reach Out to Someone'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Connection matters 💚',
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'You do not have to figure everything out alone. '
+              'Connecting with someone you trust can be a helpful '
+              'first step.',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 25),
+
+            const Text(
+              'Who would you like to connect with?',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            TextField(
+              controller: personController,
+              decoration: const InputDecoration(
+                hintText: 'Friend, family member, or trusted adult',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            const Text(
+              'How would you like to connect?',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            ...methods.map((method) {
+              return RadioListTile<String>(
+                title: Text(method),
+                value: method,
+                groupValue: selectedMethod,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedMethod = value;
+                    });
+                  }
+                },
+              );
+            }),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'What would you like to say?',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            TextField(
+              controller: messageController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Write a few words...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Icon(Icons.lightbulb_outline),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'You can keep your message simple. '
+                        'For example: "Hi, could we talk? '
+                        'I could use someone to listen."',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (personController.text.trim().isEmpty ||
+                      messageController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Please fill in who you want to contact '
+                          'and your message.',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('You have a plan 💚'),
+                      content: Text(
+                        'You have chosen to connect with '
+                        '${personController.text.trim()} '
+                        'through $selectedMethod.\n\n'
+                        'Your message is ready. You can now '
+                        'reach out whenever you feel comfortable.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Done'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.favorite_outline),
+                label: const Text('Complete Activity'),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    personController.clear();
+                    messageController.clear();
+                    selectedMethod = 'In person';
+                  });
+                },
+                child: const Text('Start Again'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ActivityDetailScreen extends StatefulWidget {
   final String title;
 
