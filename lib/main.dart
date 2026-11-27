@@ -992,6 +992,219 @@ class _MindfulWalkingScreenState
   }
 }
 
+class PositiveReflectionScreen extends StatefulWidget {
+  const PositiveReflectionScreen({super.key});
+
+  @override
+  State<PositiveReflectionScreen> createState() =>
+      _PositiveReflectionScreenState();
+}
+
+class _PositiveReflectionScreenState
+    extends State<PositiveReflectionScreen> {
+
+  int currentPrompt = 0;
+
+  final TextEditingController reflectionController =
+      TextEditingController();
+
+  final List<String> prompts = [
+    'What is one good thing that happened today? 🌸',
+    'What is something you appreciate about yourself? 💚',
+    'What is a small moment that made you happy? ☀️',
+    'What is something you are looking forward to? 🌿',
+    'What is one kind thing you can tell yourself today? 💛',
+  ];
+
+  final List<String> reflections = [];
+
+  @override
+  void dispose() {
+    reflectionController.dispose();
+    super.dispose();
+  }
+
+  void nextPrompt() {
+    reflections.add(reflectionController.text.trim());
+
+    if (currentPrompt < prompts.length - 1) {
+      setState(() {
+        currentPrompt++;
+        reflectionController.clear();
+      });
+    } else {
+      setState(() {
+        currentPrompt++;
+      });
+    }
+  }
+
+  void previousPrompt() {
+    if (currentPrompt > 0) {
+      setState(() {
+        currentPrompt--;
+        reflectionController.text =
+            reflections[currentPrompt];
+        reflections.removeLast();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool completed = currentPrompt >= prompts.length;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Positive Reflection 🌸'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          if (!completed) ...[
+            const Text(
+              'Make space for positive thoughts.',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Take your time. There are no right or wrong answers. '
+              'Simply reflect on the little things that matter.',
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            LinearProgressIndicator(
+              value: (currentPrompt + 1) / prompts.length,
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            const SizedBox(height: 15),
+
+            Text(
+              'Reflection ${currentPrompt + 1} of ${prompts.length}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(22),
+                child: Text(
+                  prompts[currentPrompt],
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            TextField(
+              controller: reflectionController,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                hintText: 'Write your thoughts here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            Row(
+              children: [
+                if (currentPrompt > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: previousPrompt,
+                      child: const Text('Previous'),
+                    ),
+                  ),
+
+                if (currentPrompt > 0)
+                  const SizedBox(width: 12),
+
+                Expanded(
+                  child: FilledButton(
+                    onPressed: nextPrompt,
+                    child: Text(
+                      currentPrompt == prompts.length - 1
+                          ? 'Complete'
+                          : 'Next',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const Icon(
+              Icons.local_florist,
+              size: 75,
+              color: Colors.teal,
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'You did something wonderful! 💚',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            const Text(
+              'Thank yourself for taking time to reflect. '
+              'Remember that small positive moments matter.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 17),
+            ),
+
+            const SizedBox(height: 25),
+
+            FilledButton(
+              onPressed: () {
+                setState(() {
+                  currentPrompt = 0;
+                  reflections.clear();
+                  reflectionController.clear();
+                });
+              },
+              child: const Text('Reflect Again'),
+            ),
+
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Back to Activities'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class ActivityDetailScreen extends StatefulWidget {
   final String title;
 
