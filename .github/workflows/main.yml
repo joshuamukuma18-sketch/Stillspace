@@ -33,13 +33,11 @@ jobs:
       - name: Generate splash screen
         run: dart run flutter_native_splash:create
 
-      - name: Build APK
-        run: flutter build apk --debug
-
-
-      - name: Upload APK
+      - name: Build Release APK
+        run: flutter build apk --release
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: stillspace-android-test
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 14
+              name: stillspace-android-release
+              path: build/app/outputs/flutter-apk/app-release.apk
+              retention-days: 90
