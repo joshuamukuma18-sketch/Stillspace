@@ -21,7 +21,8 @@ jobs:
 
       - name: Generate Android project
         run: flutter create --platforms=android .
-
+      - name: Generate Web project
+        run: flutter create --platforms=web .
   
       - name: Install dependencies
         run: flutter pub get
