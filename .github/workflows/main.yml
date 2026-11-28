@@ -42,3 +42,12 @@ jobs:
               name: stillspace-android-release
               path: build/app/outputs/flutter-apk/app-release.apk
               retention-days: 90
+      - name: Build Web Release
+        run: flutter build web --release
+
+      - name: Upload Web Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: stillspace-web-release
+          path: build/web
+          retention-days: 90
